@@ -11,10 +11,12 @@ import { PlayDto } from 'src/bot/models/play.dto';
 export class PlayCommand {
   @Handler()
   onPlay(@IA(SlashCommandPipe) dto: PlayDto) {
+    console.log('DTO recibido:', dto);
+    if (!dto || !dto.query) {
+      return 'debes elegir una cancion';
+    }
+
     const { query } = dto;
-
-    if (!query) return 'debes elegir una cancion';
-
-    return `la cancion elegida es ${query}`;
+    return `Chupala Nestor, pagate un bot no te voy a reporoducir ${query}`;
   }
 }

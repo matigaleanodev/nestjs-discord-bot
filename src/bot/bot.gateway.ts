@@ -24,7 +24,6 @@ export class BotGateway {
         return;
       }
 
-      // Buscar el primer canal de texto donde el bot tenga permisos para escribir
       const channel = guild.channels.cache
         .filter(
           (c) =>

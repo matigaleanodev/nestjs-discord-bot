@@ -24,6 +24,11 @@ dotenv.config();
             GatewayIntentBits.GuildVoiceStates,
           ],
         },
+        registerCommandOptions: [
+          {
+            removeCommandsBefore: true,
+          },
+        ],
       }),
     }),
     BotModule,
