@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Client, VoiceChannel } from 'discord.js';
+import { Client, CommandInteraction, VoiceChannel } from 'discord.js';
 import { InjectDiscordClient } from '@discord-nestjs/core';
 import {
   AudioPlayerStatus,
@@ -38,35 +38,45 @@ export class MusicService {
 
     return connection;
   }
-
   /**
    * Reproduce la canción en el canal de voz
    * @param stream El stream de audio a reproducir
    * @param connection La conexión al canal de voz
-   * @returns Booleano que indica si se comenzó a reproducir
+   * @returns Promesa que indica si se comenzó a reproducir correctamente
    */
-  playSong(stream: Readable, connection: VoiceConnection): boolean {
+  async playSong(
+    stream: Readable,
+    title: string,
+    connection: VoiceConnection,
+    interaction: CommandInteraction,
+  ) {
     const player = createAudioPlayer();
     const resource = createAudioResource(stream, {
       inputType: StreamType.Arbitrary,
     });
 
     player.play(resource);
-    connection.subscribe(player);
+    const subscription = connection.subscribe(player);
+
+    if (!subscription) {
+      console.error('❌ No se pudo suscribir al canal de voz.');
+      await interaction.followUp(`❌ Error al conectar al canal de voz.`);
+      return;
+    }
 
     player.on(AudioPlayerStatus.Playing, () => {
-      console.log('🔊 Reproduciendo audio...');
+      console.log(`🔊 Reproduciendo: ${title}`);
+      void interaction.followUp(`🎶 ¡Reproduciendo ahora: **${title}**!`);
     });
 
     player.on(AudioPlayerStatus.Idle, () => {
       console.log('🎵 Canción terminada.');
-      // Podés manejar aquí una cola de reproducción si querés
+      void interaction.followUp(`✅ Canción finalizada.`);
     });
 
     player.on('error', (error) => {
       console.error('❌ Error en el reproductor:', error);
+      void interaction.followUp(`❌ Hubo un problema con la reproducción.`);
     });
-
-    return true;
   }
 }

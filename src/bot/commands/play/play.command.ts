@@ -35,24 +35,24 @@ export class PlayCommand {
     if (!voiceChannel) {
       return `Debes unirte a un canal de voz para poder solicitar una canción.`;
     }
+    await interaction.reply(`🎵 Buscando la canción...`);
 
     try {
       const song = await this.youtubeService.getSong(query);
       if (!song) {
-        return `No se pudo encontrar una canción con ese término.`;
+        await interaction.followUp(`❌ No se encontró la canción.`);
+        return;
       }
 
       const connection: VoiceConnection =
         this.musicService.joinVoiceChannel(voiceChannel);
-
-      const isPlaying = this.musicService.playSong(song.stream, connection);
-
-      if (isPlaying) {
-        console.log(`¡Reproduciendo "${song.info.videoDetails.title}"!`);
-        return `¡Reproduciendo "${song.info.videoDetails.title}"!`;
-      } else {
-        return `Hubo un problema al intentar reproducir la canción.`;
-      }
+      const { title } = song.info.videoDetails;
+      await this.musicService.playSong(
+        song.stream,
+        title,
+        connection,
+        interaction,
+      );
     } catch (error) {
       console.error('Error en PlayCommand:', error);
       return `Ocurrió un error al intentar obtener o reproducir la canción.`;
