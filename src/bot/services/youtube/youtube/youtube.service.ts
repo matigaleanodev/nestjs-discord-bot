@@ -1,28 +1,31 @@
 import { Injectable } from '@nestjs/common';
-import * as fs from 'fs';
 import * as ytdl from '@distube/ytdl-core';
 import * as ytsr from '@distube/ytsr';
 
 @Injectable()
 export class YoutubeService {
   async getSong(query: string) {
-    console.log(query);
+    console.log('Buscando:', query);
     const isValidUrl = ytdl.validateURL(query);
-    if (isValidUrl) {
-      const info = await ytdl.getBasicInfo(query);
 
-      const stream = ytdl(query).pipe(fs.createWriteStream('video.mp4'));
+    try {
+      let videoUrl = query;
+
+      if (!isValidUrl) {
+        const result = await ytsr(query);
+        const video = result.items[0];
+        if (!video) throw new Error('No se encontró ningún video.');
+        videoUrl = video.url;
+      }
+
+      const info = await ytdl.getBasicInfo(videoUrl);
+
+      const stream = ytdl(videoUrl, { filter: 'audioonly' });
 
       return { info, stream };
-    } else {
-      const result = await ytsr(query);
-      const video = result.items[0];
-      const url = video.url;
-      const info = await ytdl.getBasicInfo(url);
-
-      const stream = ytdl(query).pipe(fs.createWriteStream('video.mp4'));
-
-      return { info, stream };
+    } catch (error) {
+      console.error('Error al obtener el video:', error);
+      throw new Error('No se pudo obtener el video');
     }
   }
 }

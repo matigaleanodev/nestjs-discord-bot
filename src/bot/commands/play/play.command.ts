@@ -1,8 +1,10 @@
 import { SlashCommandPipe } from '@discord-nestjs/common';
 import { Command, Handler, IA, InteractionEvent } from '@discord-nestjs/core';
+import { VoiceConnection } from '@discordjs/voice';
 import { Injectable } from '@nestjs/common';
+import { CommandInteraction, GuildMember, VoiceChannel } from 'discord.js';
 import { PlayDto } from 'src/bot/models/play.dto';
-//import { CommandInteraction } from 'discord.js';
+import { MusicService } from 'src/bot/services/music/music.service';
 import { YoutubeService } from 'src/bot/services/youtube/youtube/youtube.service';
 
 @Command({
@@ -11,20 +13,49 @@ import { YoutubeService } from 'src/bot/services/youtube/youtube/youtube.service
 })
 @Injectable()
 export class PlayCommand {
-  constructor(private readonly youtube: YoutubeService) {}
+  constructor(
+    private readonly youtubeService: YoutubeService,
+    private readonly musicService: MusicService,
+  ) {}
 
   @Handler()
   async onPlay(
     @IA(SlashCommandPipe) dto: PlayDto,
-    //@InteractionEvent() interaction: CommandInteraction,
+    @InteractionEvent() interaction: CommandInteraction,
   ) {
     const { query } = dto;
-    if (!dto || !query) return `debe ingresar una cancion`;
 
-    const resolve = await this.youtube.getSong(query);
+    if (!dto || !query) {
+      return `Debe ingresar una canción o una URL válida.`;
+    }
 
-    console.log(resolve);
+    const member: GuildMember = interaction.member as GuildMember;
+    const voiceChannel = member.voice.channel as VoiceChannel;
 
-    return `su cancion es`;
+    if (!voiceChannel) {
+      return `Debes unirte a un canal de voz para poder solicitar una canción.`;
+    }
+
+    try {
+      const song = await this.youtubeService.getSong(query);
+      if (!song) {
+        return `No se pudo encontrar una canción con ese término.`;
+      }
+
+      const connection: VoiceConnection =
+        this.musicService.joinVoiceChannel(voiceChannel);
+
+      const isPlaying = this.musicService.playSong(song.stream, connection);
+
+      if (isPlaying) {
+        console.log(`¡Reproduciendo "${song.info.videoDetails.title}"!`);
+        return `¡Reproduciendo "${song.info.videoDetails.title}"!`;
+      } else {
+        return `Hubo un problema al intentar reproducir la canción.`;
+      }
+    } catch (error) {
+      console.error('Error en PlayCommand:', error);
+      return `Ocurrió un error al intentar obtener o reproducir la canción.`;
+    }
   }
 }
