@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common';
 import { CommandInteraction, GuildMember, VoiceChannel } from 'discord.js';
 import { PlayDto } from 'src/bot/models/play.dto';
 import { MusicService } from 'src/bot/services/music/music.service';
-import { YoutubeService } from 'src/bot/services/youtube/youtube/youtube.service';
+import { YoutubeService } from 'src/bot/services/youtube/youtube.service';
 
 @Command({
   name: 'play',
@@ -46,12 +46,11 @@ export class PlayCommand {
 
       const connection: VoiceConnection =
         this.musicService.joinVoiceChannel(voiceChannel);
+      const { stream } = song;
       const { title } = song.info.videoDetails;
-      await this.musicService.playSong(
-        song.stream,
-        title,
+      await this.musicService.addToQueue(
+        { stream, title, interaction },
         connection,
-        interaction,
       );
     } catch (error) {
       console.error('Error en PlayCommand:', error);
