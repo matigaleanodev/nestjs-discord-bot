@@ -8,7 +8,7 @@ import {
   joinVoiceChannel,
   StreamType,
   VoiceConnection,
-  VoiceConnectionStatus,
+  //VoiceConnectionStatus,
 } from '@discordjs/voice';
 import { Readable } from 'stream';
 
@@ -74,15 +74,15 @@ export class MusicService {
       console.log('🎵 Canción terminada.');
       void interaction.followUp(`✅ **${title}** ha finalizado.`);
 
-      setTimeout(() => {
-        if (connection.state.status !== VoiceConnectionStatus.Destroyed) {
-          console.log('🔌 Desconectando por inactividad...');
-          connection.destroy();
-          void interaction.followUp(
-            '⏳ No hay más canciones, saliendo del canal...',
-          );
-        }
-      }, 20000);
+      // setTimeout(() => {
+      //   if (connection.state.status !== VoiceConnectionStatus.Destroyed) {
+      //     console.log('🔌 Desconectando por inactividad...');
+      //     connection.destroy();
+      //     void interaction.followUp(
+      //       '⏳ No hay más canciones, saliendo del canal...',
+      //     );
+      //   }
+      // }, 20000);
     });
 
     player.on('error', (error) => {
