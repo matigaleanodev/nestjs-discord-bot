@@ -1,3 +1,4 @@
+import { SlashCommandPipe } from '@discord-nestjs/common';
 import { Command, Handler, InteractionEvent } from '@discord-nestjs/core';
 import { VoiceConnection } from '@discordjs/voice';
 import { Injectable } from '@nestjs/common';
@@ -13,7 +14,9 @@ export class NextCommand {
   constructor(private readonly musicService: MusicService) {}
 
   @Handler()
-  async onNext(@InteractionEvent() interaction: CommandInteraction) {
+  async onNext(
+    @InteractionEvent(SlashCommandPipe) interaction: CommandInteraction,
+  ) {
     const member: GuildMember = interaction.member as GuildMember;
     const voiceChannel = member.voice.channel as VoiceChannel;
 
