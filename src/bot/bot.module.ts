@@ -15,6 +15,6 @@ import { NextCommand } from './commands/next/next.command';
     YoutubeService,
     NextCommand,
   ],
-  exports: [PlayCommand],
+  exports: [PlayCommand, NextCommand],
 })
 export class BotModule {}
