@@ -70,7 +70,7 @@ export class MusicService {
    * Reproduce la siguiente canción en la cola o desconecta si no hay más.
    * @param connection - La conexión al canal de voz.
    */
-  private playNext(connection: VoiceConnection) {
+  playNext(connection: VoiceConnection) {
     const guildId = connection.joinConfig.guildId;
     const queue = this.queues.get(guildId);
     if (!queue || queue.length === 0) {
