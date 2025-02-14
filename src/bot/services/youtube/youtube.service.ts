@@ -15,7 +15,7 @@ export class YoutubeService {
     const cookies: ytdl.Cookie[] = JSON.parse(
       this.configService.get<string>('YOUTUBE_COOKIES') || '{}',
     ) as ytdl.Cookie[];
-    this.agent = ytdl.createAgent(cookies);
+    this.agent = ytdl.createProxyAgent({ uri: '190.103.177.131:80' }, cookies);
   }
 
   async getSong(query: string) {
