@@ -9,10 +9,13 @@ export class YoutubeService {
     string,
     { info: ytdl.videoInfo; stream: ReturnType<typeof ytdl.downloadFromInfo> }
   >();
-  private readonly cookies: string;
+  private readonly agent: ReturnType<typeof ytdl.createAgent>;
 
   constructor(private readonly configService: ConfigService) {
-    this.cookies = this.configService.get<string>('YOUTUBE_COOKIES') || '';
+    const cookies: ytdl.Cookie[] = JSON.parse(
+      this.configService.get<string>('YOUTUBE_COOKIES') || '{}',
+    ) as ytdl.Cookie[];
+    this.agent = ytdl.createAgent(cookies);
   }
 
   async getSong(query: string) {
@@ -40,11 +43,13 @@ export class YoutubeService {
       const requestOptions = {
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-          Cookie: this.cookies,
         },
       };
 
-      const info = await ytdl.getBasicInfo(videoUrl, { requestOptions });
+      const info = await ytdl.getBasicInfo(videoUrl, {
+        requestOptions,
+        agent: this.agent,
+      });
 
       const stream = ytdl(videoUrl, {
         filter: 'audioonly',
@@ -53,6 +58,7 @@ export class YoutubeService {
         dlChunkSize: 0,
         liveBuffer: 20000,
         requestOptions,
+        agent: this.agent,
       });
 
       const result = { info, stream };
