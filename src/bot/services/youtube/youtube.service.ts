@@ -13,10 +13,8 @@ export class YoutubeService {
 
   constructor(private readonly configService: ConfigService) {
     const proxy = this.configService.get<string>('PROXY') || ``;
-    const cookies: ytdl.Cookie[] = JSON.parse(
-      this.configService.get<string>('YOUTUBE_COOKIES') || '{}',
-    ) as ytdl.Cookie[];
-    this.agent = ytdl.createProxyAgent({ uri: proxy }, cookies);
+
+    this.agent = ytdl.createProxyAgent({ uri: proxy });
   }
 
   async getSong(query: string) {
