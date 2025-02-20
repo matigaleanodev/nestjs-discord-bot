@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as ytdl from '@distube/ytdl-core';
 import * as ytsr from '@distube/ytsr';
-import { ConfigService } from '@nestjs/config';
+//import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class YoutubeService {
@@ -9,13 +9,15 @@ export class YoutubeService {
     string,
     { info: ytdl.videoInfo; stream: ReturnType<typeof ytdl.downloadFromInfo> }
   >();
-  private readonly agent: ReturnType<typeof ytdl.createAgent>;
+  // private readonly agent: ReturnType<typeof ytdl.createAgent>;
 
-  constructor(private readonly configService: ConfigService) {
-    const proxy = this.configService.get<string>('PROXY') || ``;
+  // constructor(private readonly configService: ConfigService) {
+  //   const proxy = this.configService.get<string>('PROXY') || ``;
 
-    this.agent = ytdl.createProxyAgent({ uri: proxy });
-  }
+  //   this.agent = ytdl.createProxyAgent({
+  //     uri: proxy,
+  //   });
+  // }
 
   async getSong(query: string) {
     console.log('Buscando:', query);
@@ -47,7 +49,7 @@ export class YoutubeService {
 
       const info = await ytdl.getBasicInfo(videoUrl, {
         requestOptions,
-        agent: this.agent,
+        //agent: this.agent,
       });
 
       const stream = ytdl(videoUrl, {
@@ -57,7 +59,7 @@ export class YoutubeService {
         dlChunkSize: 0,
         liveBuffer: 20000,
         requestOptions,
-        agent: this.agent,
+        //agent: this.agent,
       });
 
       const result = { info, stream };
