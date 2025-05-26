@@ -12,7 +12,7 @@ export class BotGateway {
   ) {}
 
   @Once('ready')
-  async onReady() {
+  onReady() {
     if (this.client.user) {
       this.logger.log(`Bot ${this.client.user.tag} was started!`);
 
@@ -35,7 +35,7 @@ export class BotGateway {
         .first() as TextChannel | undefined;
 
       if (channel) {
-        await channel.send('Anata ga watashi no Master ka?');
+        console.log('Anata ga watashi no Master ka?');
       } else {
         this.logger.warn('No se encontró ningún canal de texto disponible.');
       }
