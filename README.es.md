@@ -12,6 +12,10 @@ NestJS · TypeScript · discord.js · Discord Voice.
 
 Requiere una aplicación/bot de Discord, permisos adecuados y configuración de proveedores. La reproducción depende de servicios externos; las colas y conexiones se mantienen en memoria del proceso.
 
+## Comandos
+
+[BotGateway](src/bot/bot.gateway.ts) atiende los comandos de texto exactos `!ping`, `!hola` y `!saber`, e ignora mensajes de otros bots. El comando slash [`/play`](src/bot/commands/play/play.command.ts) recibe una búsqueda o URL de YouTube; [`/next`](src/bot/commands/next/next.command.ts) avanza la reproducción. Ambos comandos de voz requieren que quien los solicita esté en un canal de voz. Estos handlers no ofrecen un comando para persistir o restaurar colas tras reiniciar.
+
 ## Desarrollo local
 
 Usar un entorno Node.js compatible con package.json y el lockfile de dependencias, cuando exista.
