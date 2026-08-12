@@ -22,7 +22,7 @@
   "dependencies": {
     "@discord-nestjs/common": "^5.3.2",
     "@discord-nestjs/core": "^5.5.1",
-    "@discord-player/extractor": "^7.1.0",
+    "@discord-player/extractor": "^7.2.0",
     "@discordjs/opus": "^0.10.0",
     "@discordjs/voice": "^0.19.0",
     "@distube/ytdl-core": "^4.16.12",
